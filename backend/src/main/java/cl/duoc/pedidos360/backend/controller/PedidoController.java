@@ -1,24 +1,36 @@
 package cl.duoc.pedidos360.backend.controller;
 
+import cl.duoc.pedidos360.backend.model.Pedido;
+import cl.duoc.pedidos360.backend.repository.PedidoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/pedidos")
 public class PedidoController {
 
-    // Este endpoint lo puede ver cualquier usuario que haya iniciado sesión (Cualquier token válido)
-    @GetMapping
-    public String listarPedidos() {
-        return "Lista de pedidos 360 (Acceso concedido a usuario autenticado)";
+    @Autowired
+    private PedidoRepository pedidoRepository;
+
+    // CREATE: Cualquier usuario autenticado puede guardar un pedido
+    @PostMapping
+    public Pedido crearPedido(@RequestBody Pedido pedido) {
+        return pedidoRepository.save(pedido);
     }
 
-    // Este endpoint SOLO lo puede ver un usuario que tenga el rol "ADMIN" en Cognito
-    @GetMapping("/admin")
+    // READ: Cualquier usuario autenticado puede ver los pedidos
+    @GetMapping
+    public List<Pedido> listarPedidos() {
+        return pedidoRepository.findAll();
+    }
+
+    // DELETE: SOLO los administradores pueden eliminar pedidos
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public String panelAdmin() {
-        return "Panel de Administración (Acceso concedido solo a rol ADMIN)";
+    public void eliminarPedido(@PathVariable Long id) {
+        pedidoRepository.deleteById(id);
     }
 }
