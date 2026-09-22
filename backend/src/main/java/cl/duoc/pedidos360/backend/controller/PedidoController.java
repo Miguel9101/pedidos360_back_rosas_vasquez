@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/pedidos")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"}) // Permite ambos puertos de Vite
 public class PedidoController {
 
     @Autowired
